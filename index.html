@@ -229,7 +229,7 @@
         .form-group { margin-bottom: 25px; }
         .form-group label { display: block; margin-bottom: 10px; color: #fff; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-family: var(--font-main); outline: none; transition: 0.3s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(180, 0, 255, 0.2); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(180, 0, 255, 0.2); transform: scale(1.01);}
         
         .submit-btn { background: linear-gradient(90deg, var(--secondary), var(--primary)); color: white; border: none; padding: 15px; font-size: 1rem; font-weight: 800; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; }
         .submit-btn:hover:not(:disabled) { filter: brightness(1.2); box-shadow: 0 5px 25px rgba(180, 0, 255, 0.5); transform: translateY(-2px);}
@@ -824,7 +824,7 @@
             activeUser = null; localStorage.removeItem('ktsmp_session'); closeChat(); location.reload();
         }
 
-        // --- NAYA EPIC UPDATE BROADCAST LOGIC (WITH WEBHOOK) ---
+        // --- UPDATES (WITH WEBHOOK & VERIFIED MENTION) ---
         async function postUpdate() {
             const title = document.getElementById('postTitle').value.trim(); 
             const text = document.getElementById('postContent').value.trim();
@@ -834,13 +834,12 @@
             updates.unshift({ id: Date.now(), title, text, date: dateStr });
             syncToCloud(); 
 
-            // Yaha Tera Naya Webhook Kaam Karega!
             const UPDATE_WEBHOOK = "https://discordapp.com/api/webhooks/1481976665235128320/6AhYtEiES7NeW658QWfDZj1-F3uR6HS7qfhaF7FyA_s_hUkPoiz2By91af_J2TJpMOi1";
             
             const embed = {
                 title: `📢 ${title}`,
                 description: `>>> ${text}`,
-                color: 0x00e5ff, // Cyan Color
+                color: 0x00e5ff, 
                 footer: { 
                     text: `Assassin's SMP Network | Posted by ${activeUser.name}`, 
                     icon_url: "https://mc-heads.net/avatar/" + activeUser.name 
@@ -852,7 +851,8 @@
                 await fetch(UPDATE_WEBHOOK, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ content: "@everyone **New Server Announcement!**", embeds: [embed] })
+                    // ADDED VERIFIED ROLE MENTION HERE
+                    body: JSON.stringify({ content: "@everyone <@&1480536910039482468> **New Server Announcement!**", embeds: [embed] })
                 });
             } catch(e) {
                 console.error("Webhook failed:", e);
